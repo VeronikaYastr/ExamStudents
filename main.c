@@ -32,7 +32,7 @@ int callback(void *NotUsed, int argc, char **argv, char **azColName) {
 
 void select_oldest(){
   char command[800] = {0};
-  sprintf(command, "select Course,Name from StudentInfo inner join Units on UnID=UnitID \
+  sprintf(command, "select Course,Name,Surname from StudentInfo inner join Units on UnID=UnitID \
 where birthYear=(select min(birthYear) from StudentInfo inner join Units on UnID=UnitID \
 where Course=1) or birthYear=(select min(birthYear) from StudentInfo inner join Units \
 on UnID=UnitID where Course=2) group by Course;");
@@ -40,9 +40,16 @@ on UnID=UnitID where Course=2) group by Course;");
 
 }
 
+void select_max_sum(){
+  char command[800] = {0};
+  sprintf(command, "select Course, Name,Surname,Patronymic,BirthYear, Gender,Groupp,max(sm) from(select *, sum(Mark) as sm from (StudentInfo inner join Units) inner join Marks on idSt = StID and UnID = UnitID group by idSt) group by Course;");
+  sqlite3_exec(db, command, callback, 0, &errMsg);
+
+}
+
 void select_sum(){
   char command[800] = {0};
-  sprintf(command, "select Course, sum(Mark) from (StudentInfo inner join Units)\
+  sprintf(command, "select Course, sum(Mark) as sum from (StudentInfo inner join Units)\
 inner join Marks on idSt = StID and UnID = UnitID group by Course;");
   sqlite3_exec(db, command, callback, 0, &errMsg);
 
@@ -50,7 +57,7 @@ inner join Marks on idSt = StID and UnID = UnitID group by Course;");
 
 void select_avg_course(){
   char command[800] = {0};
-  sprintf(command, "select Course, avg(Mark) from (StudentInfo inner join Units) inner join Marks on idSt = StID and UnID = UnitID group by Course;");
+  sprintf(command, "select Course, avg(Mark) as avScore from (StudentInfo inner join Units) inner join Marks on idSt = StID and UnID = UnitID group by Course;");
   sqlite3_exec(db, command, callback, 0, &errMsg);
 }
 
@@ -74,7 +81,7 @@ int main(int argc, char* argv[]) {
          select_oldest();
          break;
        case 1:
-         select_sum();
+         select_max_sum();
          break;
        case 2:
          select_sum();
