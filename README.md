@@ -1,3 +1,3 @@
-#to compile : 
-#gcc main.c -o main
-#./main
+# to compile :
+# gcc main.c -o main
+# ./main
